@@ -36,7 +36,7 @@
                         <asp:ListItem Value="2">转excel格式</asp:ListItem>
                         <asp:ListItem Value="3">转pdf格式</asp:ListItem>
                     </asp:DropDownList>
-                    <asp:Button ID="Button3" runat="server" Text="导出" /></td>
+                    <asp:Button ID="Button3" runat="server" Text="导出" OnClick="Button3_Click" /></td>
             </tr>
         </table>
     </form>
