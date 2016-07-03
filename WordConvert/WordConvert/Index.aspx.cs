@@ -14,9 +14,11 @@ namespace WordConvert
         //转换成html按钮
         protected void Button2_Click(object sender, EventArgs e)
         {
-            string wordPath = Server.MapPath("~/wordInfo/") + this.FileUpload2.PostedFile.FileName;
-            GetPathByDocToHTML(wordPath);
-
+            //创建临时文件，避开浏览器不兼容问题
+            string fname = Server.MapPath("~/wordInfo/") + Guid.NewGuid().ToString() + ".doc";
+            this.FileUpload2.SaveAs(fname);        
+                      
+            GetPathByDocToHTML(fname);
         }
 
         #region wordFormToHtml
@@ -101,6 +103,8 @@ namespace WordConvert
 
             //转化HTML页面统一编码格式
             TransHTMLEncoding(ConfigPath);
+
+            File.Delete(strFile);//删除临时保存的文件
 
             return (strFilePath + filename + ".html");
         }
