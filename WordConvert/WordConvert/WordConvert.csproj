@@ -38,8 +38,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="DocX">
-      <HintPath>C:\Users\wt\Desktop\DocX.dll</HintPath>
+    <Reference Include="Ionic.Zip">
+      <HintPath>C:\Users\wt\Desktop\NPOI\Ionic.Zip.dll</HintPath>
     </Reference>
     <Reference Include="itextsharp">
       <HintPath>C:\Users\wt\Desktop\itextsharp.dll</HintPath>
@@ -50,8 +50,12 @@
       <EmbedInteropTypes>False</EmbedInteropTypes>
       <HintPath>bin\Microsoft.Office.Interop.Word.dll</HintPath>
     </Reference>
-    <Reference Include="NPOI">
-      <HintPath>C:\Users\wt\Desktop\NPOI 2.2.1 binary package\Release\Net40\NPOI.dll</HintPath>
+    <Reference Include="NPOI, Version=2.2.1.0, Culture=neutral, PublicKeyToken=0df73ec7942b34e1, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Users\wt\Desktop\NPOI\NPOI.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Data.SQLite">
+      <HintPath>C:\Users\wt\Desktop\SQLite-1.0.60.0-binaries\bin\System.Data.SQLite.DLL</HintPath>
     </Reference>
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
