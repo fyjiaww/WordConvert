@@ -18,7 +18,7 @@ namespace FyDB
     public abstract class SqlHelper
     {
         //获取数据库连接字符串，其属于静态变量且只读，项目中所有文档可以直接使用，但不能修改
-        public static readonly string ConnectionStringLocalTransaction = ConfigurationManager.ConnectionStrings["SimpleOAConnectionString"].ConnectionString;
+        public static readonly string ConnectionStringLocalTransaction = ConfigurationManager.AppSettings["SimpleOAConnectionString"];
         //public static readonly string ConnectionStringInventoryDistributedTransaction = ConfigurationManager.ConnectionStrings["SQLConnString2"].ConnectionString;
         //public static readonly string ConnectionStringOrderDistributedTransaction = ConfigurationManager.ConnectionStrings["SQLConnString3"].ConnectionString;
         //public static readonly string ConnectionStringProfile = ConfigurationManager.ConnectionStrings["SQLProfileConnString"].ConnectionString;
