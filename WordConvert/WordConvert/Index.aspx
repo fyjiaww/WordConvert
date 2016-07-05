@@ -19,7 +19,7 @@
                 <td width="100">
                     <asp:Label ID="Label1" runat="server" Text="提取word内容：" Font-Size="Small"></asp:Label></td>
                 <td>
-                    <asp:FileUpload ID="FileUpload1" runat="server" Width="190"/><asp:Button ID="Button1" runat="server" Text="提取" /></td>
+                    <asp:FileUpload ID="FileUpload1" runat="server" Width="190"/><asp:Button ID="Button1" runat="server" Text="提取" OnClick="Button1_Click" /></td>
             </tr>
             <tr>
                 <td width="100">

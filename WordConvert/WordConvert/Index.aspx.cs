@@ -9,10 +9,13 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
 using FyDB;
-using iTextSharp.text;
 using iTextSharp.text.pdf;
+using Microsoft.Office.Interop.Word;
 using NPOI.HPSF;
 using NPOI.HSSF.UserModel;
+using DataTable = System.Data.DataTable;
+using Document = iTextSharp.text.Document;
+using Paragraph = iTextSharp.text.Paragraph;
 
 namespace WordConvert
 {
@@ -236,6 +239,7 @@ namespace WordConvert
                 Microsoft.Office.Interop.Word.Document document = wordApp.Documents.Add(ref none, ref none, ref none, ref none);
                 //建立表格
                 Microsoft.Office.Interop.Word.Table table = document.Tables.Add(document.Paragraphs.Last.Range, srcDgv.Rows.Count + 1, srcDgv.Columns.Count, ref none, ref none);
+
                 try
                 {
                     //for (int i = 0; i < srcDgv.Columns.Count; i++)//输出标题
@@ -395,6 +399,28 @@ namespace WordConvert
                 Page.RegisterStartupScript("alt", "<script>alert('请填写要转换的表名!')</script>");
             }
 
+        }
+
+        //提取word内容
+        protected void Button1_Click(object sender, EventArgs e)
+        {
+            string fname = Server.MapPath("~/wordInfo/") + Guid.NewGuid().ToString() + ".doc";
+            this.FileUpload1.SaveAs(fname);
+            //创建word
+            _Application app = new Microsoft.Office.Interop.Word.Application();
+            //创建word文档
+            _Document doc = null;
+            object unknow = Type.Missing;
+            doc = app.Documents.Open(fname,
+                           ref unknow, ref unknow, ref unknow, ref unknow, ref unknow,
+                           ref unknow, ref unknow, ref unknow, ref unknow, ref unknow,
+                           ref unknow, ref unknow, ref unknow, ref unknow, ref unknow);
+            string temp = doc.Content.Text;
+            string aa = temp;
+            string content = temp.Substring(temp.IndexOf("标准简历"));
+            string name = content.Substring(content.IndexOf("姓　　名："), content.IndexOf("性　　别： ") - 1);
+            string test = name;
+            doc.Close();
         }
     }
 }
