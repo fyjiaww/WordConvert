@@ -4,8 +4,6 @@ E:\jww\扶摇\项目\转换word\WordConvert\WordConvert\WordConvert\bin\WordConv
 E:\jww\扶摇\项目\转换word\WordConvert\WordConvert\WordConvert\obj\Debug\WordConvert.csprojResolveAssemblyReference.cache
 E:\jww\扶摇\项目\转换word\WordConvert\WordConvert\WordConvert\obj\Debug\WordConvert.dll
 E:\jww\扶摇\项目\转换word\WordConvert\WordConvert\WordConvert\obj\Debug\WordConvert.pdb
-E:\jww\扶摇\项目\转换word\WordConvert\WordConvert\WordConvert\bin\DocX.dll
 E:\jww\扶摇\项目\转换word\WordConvert\WordConvert\WordConvert\bin\itextsharp.dll
-E:\jww\扶摇\项目\转换word\WordConvert\WordConvert\WordConvert\bin\NPOI.dll
-E:\jww\扶摇\项目\转换word\WordConvert\WordConvert\WordConvert\bin\ICSharpCode.SharpZipLib.dll
-E:\jww\扶摇\项目\转换word\WordConvert\WordConvert\WordConvert\bin\NPOI.xml
+E:\jww\扶摇\项目\转换word\WordConvert\WordConvert\WordConvert\bin\System.Data.SQLite.DLL
+E:\jww\扶摇\项目\转换word\WordConvert\WordConvert\WordConvert\bin\System.Data.SQLite.xml
