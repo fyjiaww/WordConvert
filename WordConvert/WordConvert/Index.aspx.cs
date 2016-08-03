@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using iTextSharp.text;
+using iTextSharp.text.pdf;
 
 namespace WordConvert
 {
@@ -130,7 +133,63 @@ namespace WordConvert
             {
                 Page.RegisterStartupScript("alt", "<script>alert('" + ex.Message + "')</script>");
             }
-        } 
+        }
         #endregion
+
+        //导出按钮
+        protected void Button3_Click(object sender, EventArgs e)
+        {
+            switch (this.DropDownList1.SelectedIndex)
+            {
+                case 0://word
+
+                    break;
+                case 1://excel
+                    NPOI.HSSF.UserModel.HSSFWorkbook book = new NPOI.HSSF.UserModel.HSSFWorkbook();
+                    NPOI.SS.UserModel.ISheet sheet = book.CreateSheet("test_01");
+
+                    // 第一列
+                    NPOI.SS.UserModel.IRow row = sheet.CreateRow(0);
+                    row.CreateCell(0).SetCellValue("第一列第一行");
+
+                    // 第二列
+                    NPOI.SS.UserModel.IRow row2 = sheet.CreateRow(1);
+                    row2.CreateCell(0).SetCellValue("第二列第一行");
+
+                    // 写入到客户端  
+                    System.IO.MemoryStream ms = new System.IO.MemoryStream();
+                    book.Write(ms);
+                    Response.AddHeader("Content-Disposition", string.Format("attachment; filename={0}.xls", DateTime.Now.ToString("yyyyMMddHHmmssfff")));
+                    Response.BinaryWrite(ms.ToArray());
+                    book = null;
+                    ms.Close();
+                    ms.Dispose();
+                    break;
+                case 2://pdf
+                    Document document = new Document();
+                    PdfWriter.GetInstance(document, new FileStream("c://123.pdf", FileMode.Create));
+                    document.Open();
+                    BaseFont bfChinese = BaseFont.CreateFont("C://WINDOWS//Fonts//simsun.ttc,1", BaseFont.IDENTITY_H, BaseFont.NOT_EMBEDDED);
+                    iTextSharp.text.Font fontChinese = new iTextSharp.text.Font(bfChinese, 12, iTextSharp.text.Font.NORMAL, new iTextSharp.text.Color(0, 0, 0));
+
+                    //导出文本的内容：
+                    document.Add(new Paragraph("你好", fontChinese));
+                    //导出图片：
+                    //iTextSharp.text.Image jpeg = iTextSharp.text.Image.GetInstance(Path.GetFullPath("1.jpg"));
+                    //document.Add(jpeg);
+
+                    //注意一定要关闭，否则PDF中的内容将得不到保存
+
+                    document.Close();
+                    break;
+            }
+        }
+
+        public class ListTemp
+        {
+            public int Id { get; set; }
+            public string Name { get; set; }
+
+        }
     }
 }
