@@ -25,7 +25,7 @@
                 <td width="100">
                     <asp:Label ID="Label2" runat="server" Text="word转html:" Font-Size="Small"></asp:Label></td>
                 <td>
-                    <asp:FileUpload ID="FileUpload2" runat="server" Width="190"/><asp:Button ID="Button2" runat="server" Text="转换" /></asp:Label></td>
+                    <asp:FileUpload ID="FileUpload2" runat="server" Width="190"/><asp:Button ID="Button2" runat="server" Text="转换" OnClick="Button2_Click" /></asp:Label></td>
             </tr>
             <tr>
                 <td width="100">
