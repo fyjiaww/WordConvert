@@ -31,8 +31,8 @@
                 <td width="100">
                     <asp:Label ID="Label3" runat="server" Text="数据库导出：" Font-Size="Small"></asp:Label></td>
                 <td>
-                    <asp:TextBox ID="tbName" runat="server"></asp:TextBox>
-                    <asp:DropDownList ID="DropDownList1" runat="server" Width="182">
+                    <asp:TextBox ID="tbName" runat="server" Width="70"></asp:TextBox>
+                    <asp:DropDownList ID="DropDownList1" runat="server" Width="100">
                         <asp:ListItem Value="1">转word格式</asp:ListItem>
                         <asp:ListItem Value="2">转excel格式</asp:ListItem>
                         <asp:ListItem Value="3">转pdf格式</asp:ListItem>

@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.SqlClient;
 using System.Data.SQLite;
 using System.IO;
+using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
+using FyDB;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
 using NPOI.HPSF;
@@ -149,71 +152,39 @@ namespace WordConvert
 
         #endregion
 
+        #region DataTableFormToExcel
+
         /// <summary>
         /// 转换为excel
         /// </summary>
         /// <param name="tbName"></param>
-        public void FormToExcel(string tbName)
+        public void FormToExcel(string tbName, DataTable tblDatas)
         {
-            //测试连接数据库
-            SQLiteConnection conn = null;
-            string dbPath = "Data Source =" + Server.MapPath("~/sql/") + "/wordTest.db";
-            //dbPath = @"Data Source =E:\jww\扶摇\项目\转换word\sql\wordTest";
-            //conn = new SQLiteConnection(dbPath);//创建数据库实例，指定文件位置  
-            //conn.Open();//打开数据库，若文件不存在会自动创建  
-
-            //string sql = "select * from WordTable";
-            //SQLiteCommand cmdQ = new SQLiteCommand(sql, conn);
-
-            //SQLiteDataReader reader = cmdQ.ExecuteReader();
-            //while (reader.Read())
-            //{
-            //    Console.WriteLine(reader.GetInt32(0) + " " + reader.GetString(1) + " " + reader.GetString(2));
-            //}
-            //conn.Close();
-
-            //测试假数据
-            DataTable tblDatas = new DataTable("Datas");
-            DataColumn dc = null;
-            dc = tblDatas.Columns.Add("ID", Type.GetType("System.Int32"));
-            dc.AutoIncrement = true;//自动增加
-            dc.AutoIncrementSeed = 1;//起始为1
-            dc.AutoIncrementStep = 1;//步长为1
-            dc.AllowDBNull = false;//
-
-            dc = tblDatas.Columns.Add("Product", Type.GetType("System.String"));
-            dc = tblDatas.Columns.Add("Version", Type.GetType("System.String"));
-            dc = tblDatas.Columns.Add("Description", Type.GetType("System.String"));
-
-            DataRow newRow;
-            newRow = tblDatas.NewRow();
-            newRow["Product"] = "大话西游";
-            newRow["Version"] = "2.0";
-            newRow["Description"] = "我很喜欢";
-            tblDatas.Rows.Add(newRow);
-
-            newRow = tblDatas.NewRow();
-            newRow["Product"] = "梦幻西游";
-            newRow["Version"] = "3.0";
-            newRow["Description"] = "比大话更幼稚";
-            tblDatas.Rows.Add(newRow);
             NPOI.HSSF.UserModel.HSSFWorkbook book = new NPOI.HSSF.UserModel.HSSFWorkbook();
             var sheetReportResult = book.CreateSheet(tbName);
 
-            //产生第一个要用CreateRow 
-            sheetReportResult.CreateRow(0).CreateCell(0).SetCellValue("ID");
-            //之后的用GetRow 取得在CreateCell
-            sheetReportResult.GetRow(0).CreateCell(1).SetCellValue("Product");
-            sheetReportResult.GetRow(0).CreateCell(2).SetCellValue("Version");
-            sheetReportResult.GetRow(0).CreateCell(3).SetCellValue("Description");
+            for (int i = 0; i < tblDatas.Columns.Count; i++)//输出标题
+            {
+                if (i == 0)
+                {
+                    //产生第一个要用CreateRow 
+                    sheetReportResult.CreateRow(0).CreateCell(i).SetCellValue(tblDatas.Columns[i].ColumnName);
+                }
+                else
+                {
+                    //之后的用GetRow 取得在CreateCell
+                    sheetReportResult.GetRow(0).CreateCell(i).SetCellValue(tblDatas.Columns[i].ColumnName);
+                }
+            }
 
             //循环内容
-            for (var i = 0; i < tblDatas.Rows.Count; i++)
+            for (int i = 0; i < tblDatas.Rows.Count; i++)
             {
-                sheetReportResult.CreateRow(i).CreateCell(0).SetCellValue(tblDatas.Rows[i]["ID"].ToString());
-                sheetReportResult.GetRow(i).CreateCell(1).SetCellValue(tblDatas.Rows[i]["Product"].ToString());
-                sheetReportResult.GetRow(i).CreateCell(2).SetCellValue(tblDatas.Rows[i]["Version"].ToString());
-                sheetReportResult.GetRow(i).CreateCell(3).SetCellValue(tblDatas.Rows[i]["Description"].ToString());
+                sheetReportResult.CreateRow(i+1).CreateCell(0).SetCellValue(tblDatas.Rows[i][0].ToString());
+                for (int j = 0; j < tblDatas.Columns.Count; j++)
+                {
+                    sheetReportResult.GetRow(i + 1).CreateCell(j).SetCellValue(tblDatas.Rows[i][j].ToString());
+                }
             }
 
             sheetReportResult.SetColumnWidth(0, 20 * 256);
@@ -223,44 +194,159 @@ namespace WordConvert
             // 写入到客户端  
             System.IO.MemoryStream ms = new System.IO.MemoryStream();
             book.Write(ms);
-            Response.AddHeader("Content-Disposition", string.Format("attachment; filename={0}.xls", DateTime.Now.ToString("yyyyMMddHHmmssfff")));
+            Response.AddHeader("Content-Disposition",
+                string.Format("attachment; filename={0}.xls", DateTime.Now.ToString("yyyyMMddHHmmssfff")));
             Response.BinaryWrite(ms.ToArray());
             book = null;
             ms.Close();
             ms.Dispose();
         }
 
+        #endregion
+
+        #region DataTableFormToWord
+
+        public void ExportDataGridViewToWord(DataTable srcDgv)
+        {
+            if (srcDgv.Rows.Count == 0)
+            {
+                Page.RegisterStartupScript("alt", "<script>alert('没有数据可供导出!')</script>");
+                return;
+            }
+            else
+            {
+                Object none = System.Reflection.Missing.Value;
+                Microsoft.Office.Interop.Word.Application wordApp = new Microsoft.Office.Interop.Word.Application();
+                Microsoft.Office.Interop.Word.Document document = wordApp.Documents.Add(ref none, ref none, ref none, ref none);
+                //建立表格
+                Microsoft.Office.Interop.Word.Table table = document.Tables.Add(document.Paragraphs.Last.Range, srcDgv.Rows.Count + 1, srcDgv.Columns.Count, ref none, ref none);
+                try
+                {
+                    for (int i = 0; i < srcDgv.Columns.Count; i++)//输出标题
+                    {
+                        table.Cell(1, i + 1).Range.Text = srcDgv.Columns[i].ColumnName;
+                    }
+                    //输出控件中的记录
+                    for (int i = 0; i < srcDgv.Rows.Count; i++)
+                    {
+                        for (int j = 0; j < srcDgv.Columns.Count; j++)
+                        {
+                            table.Cell(i + 2, j + 1).Range.Text = srcDgv.Rows[i][j].ToString();
+                        }
+                    }
+                    table.Borders.OutsideLineStyle = Microsoft.Office.Interop.Word.WdLineStyle.wdLineStyleSingle;
+                    table.Borders.InsideLineStyle = Microsoft.Office.Interop.Word.WdLineStyle.wdLineStyleSingle;
+                    string newFile = "c://" + DateTime.Now.ToString("yyyyMMddHHmmssss") + ".doc";
+                    document.SaveAs(newFile, ref none, ref none, ref none, ref none, ref none, ref none, ref none, ref none, ref none, ref none, ref none, ref none, ref none, ref none, ref none);
+
+                    Page.RegisterStartupScript("alt", "<script>alert('数据成功导出!')</script>");
+                }
+                catch (Exception e)
+                {
+                    Page.RegisterStartupScript("alt", "<script>alert('" + e.Message + "')</script>");
+                }
+            }
+        }
+        #endregion
+
+        #region DataTableFormToPdf
+
+        public void FormToPdf(DataTable srcDgv)
+        {
+            Document document = new Document();
+            string newFile = "c://" + DateTime.Now.ToString("yyyyMMddHHmmssss") + ".pdf";
+            PdfWriter.GetInstance(document, new FileStream(newFile, FileMode.Create));
+            document.Open();
+            BaseFont bfChinese = BaseFont.CreateFont("C://WINDOWS//Fonts//simsun.ttc,1", BaseFont.IDENTITY_H,
+                BaseFont.NOT_EMBEDDED);
+            iTextSharp.text.Font fontChinese = new iTextSharp.text.Font(bfChinese, 12,
+                iTextSharp.text.Font.NORMAL, new iTextSharp.text.Color(0, 0, 0));
+
+            StringBuilder sbBuilder = new StringBuilder();
+            for (int i = 0; i < srcDgv.Columns.Count; i++)//输出标题
+            {
+                sbBuilder.Append(srcDgv.Columns[i].ColumnName + "   \t");
+            }
+            sbBuilder.Append("\n");
+            //输出控件中的记录
+            for (int i = 0; i < srcDgv.Rows.Count; i++)
+            {
+                for (int j = 0; j < srcDgv.Columns.Count; j++)
+                {
+                    sbBuilder.Append(srcDgv.Rows[i][j].ToString() + "   \t");
+                }
+                sbBuilder.Append("\n");
+            }
+            //导出文本的内容：
+            document.Add(new Paragraph(sbBuilder.ToString(), fontChinese));
+            //导出图片：
+            //iTextSharp.text.Image jpeg = iTextSharp.text.Image.GetInstance(Path.GetFullPath("1.jpg"));
+            //document.Add(jpeg);
+
+            //注意一定要关闭，否则PDF中的内容将得不到保存
+
+            document.Close();
+            Page.RegisterStartupScript("alt", "<script>alert('数据成功导出!')</script>");
+        }
+        #endregion
+        public static DataTable ConvertDataReaderToDataTable(SqlDataReader reader)
+        {
+            try
+            {
+                DataTable objDataTable = new DataTable();
+                int intFieldCount = reader.FieldCount;
+                for (int intCounter = 0; intCounter < intFieldCount; ++intCounter)
+                {
+                    objDataTable.Columns.Add(reader.GetName(intCounter), reader.GetFieldType(intCounter));
+                }
+                objDataTable.BeginLoadData();
+
+                object[] objValues = new object[intFieldCount];
+                while (reader.Read())
+                {
+                    reader.GetValues(objValues);
+                    objDataTable.LoadDataRow(objValues, true);
+                }
+                reader.Close();
+                objDataTable.EndLoadData();
+
+                return objDataTable;
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("转换出错!", ex);
+            }
+
+        }
+
         //导出按钮
         protected void Button3_Click(object sender, EventArgs e)
         {
-            switch (this.DropDownList1.SelectedIndex)
+            if (this.tbName.Text != "")
             {
-                case 0://word
-
-                    break;
-                case 1://excel
-                    FormToExcel(this.tbName.Text);
-                    break;
-                case 2://pdf
-                    Document document = new Document();
-                    PdfWriter.GetInstance(document, new FileStream("c://123.pdf", FileMode.Create));
-                    document.Open();
-                    BaseFont bfChinese = BaseFont.CreateFont("C://WINDOWS//Fonts//simsun.ttc,1", BaseFont.IDENTITY_H, BaseFont.NOT_EMBEDDED);
-                    iTextSharp.text.Font fontChinese = new iTextSharp.text.Font(bfChinese, 12, iTextSharp.text.Font.NORMAL, new iTextSharp.text.Color(0, 0, 0));
-
-                    //导出文本的内容：
-                    document.Add(new Paragraph("你好", fontChinese));
-                    //导出图片：
-                    //iTextSharp.text.Image jpeg = iTextSharp.text.Image.GetInstance(Path.GetFullPath("1.jpg"));
-                    //document.Add(jpeg);
-
-                    //注意一定要关闭，否则PDF中的内容将得不到保存
-
-                    document.Close();
-                    break;
+                string sql = string.Format("select * from {0}", this.tbName.Text);
+                SqlDataReader reader = SqlHelper.ExecuteReader(SqlHelper.ConnectionStringLocalTransaction, CommandType.Text,
+                         sql, null);
+                DataTable tblDatas = ConvertDataReaderToDataTable(reader);
+                switch (this.DropDownList1.SelectedIndex)
+                {
+                    case 0: //word
+                        ExportDataGridViewToWord(tblDatas);
+                        break;
+                    case 1: //excel
+                        FormToExcel(this.tbName.Text, tblDatas);
+                        break;
+                    case 2: //pdf
+                        FormToPdf(tblDatas);
+                        break;
+                }
             }
+            else
+            {
+                Page.RegisterStartupScript("alt", "<script>alert('请填写要转换的表名!')</script>");
+            }
+
         }
-
-
     }
 }
