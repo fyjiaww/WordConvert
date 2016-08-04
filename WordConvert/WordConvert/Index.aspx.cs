@@ -163,24 +163,40 @@ namespace WordConvert
             NPOI.HSSF.UserModel.HSSFWorkbook book = new NPOI.HSSF.UserModel.HSSFWorkbook();
             var sheetReportResult = book.CreateSheet(tbName);
 
-            for (int i = 0; i < tblDatas.Columns.Count; i++)//输出标题
-            {
-                if (i == 0)
-                {
-                    //产生第一个要用CreateRow 
-                    sheetReportResult.CreateRow(0).CreateCell(i).SetCellValue(tblDatas.Columns[i].ColumnName);
-                }
-                else
-                {
-                    //之后的用GetRow 取得在CreateCell
-                    sheetReportResult.GetRow(0).CreateCell(i).SetCellValue(tblDatas.Columns[i].ColumnName);
-                }
-            }
+            //for (int i = 0; i < tblDatas.Columns.Count; i++)//输出标题
+            //{
+            //    if (i == 0)
+            //    {
+            //        //产生第一个要用CreateRow 
+            //        sheetReportResult.CreateRow(0).CreateCell(i).SetCellValue(tblDatas.Columns[i].ColumnName);
+            //    }
+            //    else
+            //    {
+            //        //之后的用GetRow 取得在CreateCell
+            //        sheetReportResult.GetRow(0).CreateCell(i).SetCellValue(tblDatas.Columns[i].ColumnName);
+            //    }
+            //}
+            sheetReportResult.CreateRow(0).CreateCell(0).SetCellValue("姓名");
+            sheetReportResult.GetRow(0).CreateCell(1).SetCellValue("性别");
+            sheetReportResult.GetRow(0).CreateCell(2).SetCellValue("年龄");
+            sheetReportResult.GetRow(0).CreateCell(3).SetCellValue("学历");
+            sheetReportResult.GetRow(0).CreateCell(4).SetCellValue("工作年限");
+            sheetReportResult.GetRow(0).CreateCell(5).SetCellValue("求职意向");
+            sheetReportResult.GetRow(0).CreateCell(6).SetCellValue("期望薪水");
+            sheetReportResult.GetRow(0).CreateCell(7).SetCellValue("最近单位");
+            sheetReportResult.GetRow(0).CreateCell(8).SetCellValue("最近职位");
+            sheetReportResult.GetRow(0).CreateCell(9).SetCellValue("毕业院校");
+            sheetReportResult.GetRow(0).CreateCell(10).SetCellValue("专业");
+            sheetReportResult.GetRow(0).CreateCell(11).SetCellValue("手机");
+            sheetReportResult.GetRow(0).CreateCell(12).SetCellValue("电子邮件");
+            sheetReportResult.GetRow(0).CreateCell(13).SetCellValue("英语等级");
+            sheetReportResult.GetRow(0).CreateCell(14).SetCellValue("工作地点");
+            sheetReportResult.GetRow(0).CreateCell(15).SetCellValue("接收时间");
 
             //循环内容
             for (int i = 0; i < tblDatas.Rows.Count; i++)
             {
-                sheetReportResult.CreateRow(i+1).CreateCell(0).SetCellValue(tblDatas.Rows[i][0].ToString());
+                sheetReportResult.CreateRow(i + 1).CreateCell(0).SetCellValue(tblDatas.Rows[i][0].ToString());
                 for (int j = 0; j < tblDatas.Columns.Count; j++)
                 {
                     sheetReportResult.GetRow(i + 1).CreateCell(j).SetCellValue(tblDatas.Rows[i][j].ToString());
@@ -222,10 +238,26 @@ namespace WordConvert
                 Microsoft.Office.Interop.Word.Table table = document.Tables.Add(document.Paragraphs.Last.Range, srcDgv.Rows.Count + 1, srcDgv.Columns.Count, ref none, ref none);
                 try
                 {
-                    for (int i = 0; i < srcDgv.Columns.Count; i++)//输出标题
-                    {
-                        table.Cell(1, i + 1).Range.Text = srcDgv.Columns[i].ColumnName;
-                    }
+                    //for (int i = 0; i < srcDgv.Columns.Count; i++)//输出标题
+                    //{
+                    //    table.Cell(1, i + 1).Range.Text = srcDgv.Columns[i].ColumnName;
+                    //}
+                    table.Cell(1, 1).Range.Text = "姓名";
+                    table.Cell(1, 2).Range.Text = "性别";
+                    table.Cell(1, 3).Range.Text = "年龄";
+                    table.Cell(1, 4).Range.Text = "学历";
+                    table.Cell(1, 5).Range.Text = "工作年限";
+                    table.Cell(1, 6).Range.Text = "求职意向";
+                    table.Cell(1, 7).Range.Text = "期望薪水";
+                    table.Cell(1, 8).Range.Text = "最近单位";
+                    table.Cell(1, 9).Range.Text = "最近职位";
+                    table.Cell(1, 10).Range.Text = "毕业院校";
+                    table.Cell(1, 11).Range.Text = "专业";
+                    table.Cell(1, 12).Range.Text = "手机";
+                    table.Cell(1, 13).Range.Text = "电子邮件";
+                    table.Cell(1, 14).Range.Text = "英语等级";
+                    table.Cell(1, 15).Range.Text = "工作地点";
+                    table.Cell(1, 16).Range.Text = "接收时间";
                     //输出控件中的记录
                     for (int i = 0; i < srcDgv.Rows.Count; i++)
                     {
@@ -263,17 +295,33 @@ namespace WordConvert
                 iTextSharp.text.Font.NORMAL, new iTextSharp.text.Color(0, 0, 0));
 
             StringBuilder sbBuilder = new StringBuilder();
-            for (int i = 0; i < srcDgv.Columns.Count; i++)//输出标题
-            {
-                sbBuilder.Append(srcDgv.Columns[i].ColumnName + "   \t");
-            }
+            //for (int i = 0; i < srcDgv.Columns.Count; i++)//输出标题
+            //{
+            //    sbBuilder.Append(srcDgv.Columns[i].ColumnName + "   ");
+            //}
+            sbBuilder.Append("姓名   ");
+            sbBuilder.Append("性别   ");
+            sbBuilder.Append("年龄   ");
+            sbBuilder.Append("学历   ");
+            sbBuilder.Append("工作年限   ");
+            sbBuilder.Append("求职意向   ");
+            sbBuilder.Append("期望薪水   ");
+            sbBuilder.Append("最近单位   ");
+            sbBuilder.Append("最近职位   ");
+            sbBuilder.Append("毕业院校   ");
+            sbBuilder.Append("专业   ");
+            sbBuilder.Append("手机   ");
+            sbBuilder.Append("电子邮件   ");
+            sbBuilder.Append("英语等级   ");
+            sbBuilder.Append("工作地点   ");
+            sbBuilder.Append("接收时间   ");
             sbBuilder.Append("\n");
             //输出控件中的记录
             for (int i = 0; i < srcDgv.Rows.Count; i++)
             {
                 for (int j = 0; j < srcDgv.Columns.Count; j++)
                 {
-                    sbBuilder.Append(srcDgv.Rows[i][j].ToString() + "   \t");
+                    sbBuilder.Append(srcDgv.Rows[i][j].ToString() + "   ");
                 }
                 sbBuilder.Append("\n");
             }
