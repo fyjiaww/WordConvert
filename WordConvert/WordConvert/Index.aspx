@@ -15,6 +15,17 @@
     <form id="form1" runat="server">
         <h3>word转换工具</h3>
         <table border="1" cellspacing="0" width="700" height="200" style="border: 1px solid beige">
+            <tr>                
+                <td colspan="2">
+                    <asp:Label ID="Label4" runat="server" Text="数据源：" Font-Size="Small" ></asp:Label>                    
+                    <asp:DropDownList ID="DropDownList2" runat="server" Width="116">
+                        <asp:ListItem Value="1">中国皮革人才网</asp:ListItem>
+                        <asp:ListItem Value="2">前程无忧</asp:ListItem>
+                        <asp:ListItem Value="3">猎聘网</asp:ListItem>
+                        <asp:ListItem Value="4">国际人才</asp:ListItem>
+                    </asp:DropDownList>
+                </td>
+            </tr>
             <tr>
                 <td width="100">
                     <asp:Label ID="Label1" runat="server" Text="提取word内容：" Font-Size="Small"></asp:Label></td>

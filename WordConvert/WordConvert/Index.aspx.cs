@@ -16,6 +16,7 @@ using NPOI.HSSF.UserModel;
 using DataTable = System.Data.DataTable;
 using Document = iTextSharp.text.Document;
 using Paragraph = iTextSharp.text.Paragraph;
+using WordConvert.Models;
 
 namespace WordConvert
 {
@@ -404,7 +405,9 @@ namespace WordConvert
         //提取word内容
         protected void Button1_Click(object sender, EventArgs e)
         {
+            //创建临时文档
             string fname = Server.MapPath("~/wordInfo/") + Guid.NewGuid().ToString() + ".doc";
+            //创建临时文档
             this.FileUpload1.SaveAs(fname);
             //创建word
             _Application app = new Microsoft.Office.Interop.Word.Application();
@@ -415,12 +418,292 @@ namespace WordConvert
                            ref unknow, ref unknow, ref unknow, ref unknow, ref unknow,
                            ref unknow, ref unknow, ref unknow, ref unknow, ref unknow,
                            ref unknow, ref unknow, ref unknow, ref unknow, ref unknow);
-            string temp = doc.Content.Text;
-            string aa = temp;
-            string content = temp.Substring(temp.IndexOf("标准简历"));
-            string name = content.Substring(content.IndexOf("姓　　名："), content.IndexOf("性　　别： ") - 1);
-            string test = name;
+            string content = doc.Content.Text;
+
+            //去除文档中的回车、换行、制表符
+            string clearContent = content
+                .Replace("\n", string.Empty)
+                .Replace("\r", string.Empty)
+                .Replace("\a", string.Empty)
+                .Replace("\t", string.Empty);
+            //.Replace(" ",string.Empty);
+
+            CurriculumVitae cv = new CurriculumVitae();
+            cv.ReceiptTime = DateTime.Now;
+
+            if (this.DropDownList2.SelectedItem.Text== "中国皮革人才网")
+            {
+                #region 皮革人才网            
+                string subContent = clearContent.Substring(clearContent.IndexOf("标准简历"));
+                string subContentTitle = clearContent.Substring(clearContent.IndexOf("简历来源"), clearContent.IndexOf("标准简历"));
+
+                //工作年限
+                cv.WorkLife = subContentTitle.Substring(subContentTitle.IndexOf("元/月")
+                    , subContentTitle.IndexOf("年") - subContentTitle.IndexOf("元/月"))
+                    .Substring("元/月".Length, subContentTitle.Substring(subContentTitle.IndexOf("元/月")
+                    , subContentTitle.IndexOf("年") - subContentTitle.IndexOf("元/月")).Length - "元/月".Length);
+
+                //姓名
+                cv.Name = subContent.Substring(subContent.IndexOf("姓　　名：")
+                    , subContent.IndexOf("性　　别：") - subContent.IndexOf("姓　　名：") - 1).Split('：')[1];
+
+                //性别
+                cv.Sex = subContent.Substring(subContent.IndexOf("性　　别：")
+                    , subContent.IndexOf("婚姻状况： ") - subContent.IndexOf("性　　别：") - 1).Split('：')[1];
+
+                //年龄
+                cv.Age = subContent.Substring(subContent.IndexOf("年　　龄：")
+                    , subContent.IndexOf("现所在地：") - subContent.IndexOf("年　　龄：") - 1).Split('：')[1];
+
+                //学历
+                cv.Education = subContent.Contains("初中") ? "初中以下" :
+                    subContent.Contains("高中") ? "高中" :
+                    subContent.Contains("中专") ? "中专" :
+                    subContent.Contains("大专") ? "大专" :
+                    subContent.Contains("本科") ? "本科" :
+                    subContent.Contains("硕士") ? "硕士" : "博士";
+
+                //手机号码
+                cv.Phone = subContent.Substring(subContent.IndexOf("手机号码： ")
+                    , subContent.IndexOf("电子邮件： ") - subContent.IndexOf("手机号码： ") - 1).Split('：')[1];
+
+                //电子邮件
+                cv.Email = subContent.Substring(subContent.IndexOf("电子邮件： ")
+                    , subContent.IndexOf("后备电话： ") - subContent.IndexOf("电子邮件： ") - 1).Split('：')[1];
+
+                //英语等级
+                cv.EnglishLevel = subContent.Substring(subContent.IndexOf("英语水平：")
+                    , subContent.IndexOf("英语：   ") - subContent.IndexOf("英语水平：") - 1).Split('：')[1];
+
+                //求职意向
+                cv.JobIntension = subContent.Substring(subContent.IndexOf("应聘职位： ")
+                    , subContent.IndexOf("意向职位：") - subContent.IndexOf("应聘职位： ")).Split('：')[1];
+
+                //期望薪水
+                cv.Salary = subContent.Substring(subContent.IndexOf("待遇要求：")
+                    , subContent.IndexOf("求职状态：") - subContent.IndexOf("待遇要求：") - 1).Split('：')[1];
+
+                //毕业院校
+                cv.School = subContent.Substring(subContent.IndexOf("教育/培训"),
+                    subContent.IndexOf("语言能力") - subContent.IndexOf("教育/培训") - 1).Split(' ')[1];
+
+                //专业
+                cv.Major = subContent.Substring(subContent.IndexOf("教育/培训"),
+                    subContent.IndexOf("语言能力") - subContent.IndexOf("教育/培训") - 1).Split(' ')[2];
+
+                //工作地点
+                cv.WorkPlace = subContent.Substring(subContent.IndexOf("意向地区： ")
+                    , subContent.IndexOf("工作性质：") - subContent.IndexOf("意向地区： ") - 1).Split('：')[1];
+
+                //最近单位
+                cv.RecentWorkUnits = string.Empty;
+
+                //最近职位
+                cv.RecnetJob = string.Empty;
+                #endregion 皮革人才网
+            }
+            else if(this.DropDownList2.SelectedItem.Text == "前程无忧")
+            {
+                #region 前程无忧            
+                string subContent = clearContent;
+
+                //工作年限
+                cv.WorkLife = clearContent.Substring(clearContent.IndexOf("%"),clearContent.IndexOf("工作经验 ")- clearContent.IndexOf("%")-1).Split(' ')[1];
+
+                //未获取
+                //姓名
+                cv.Name = subContent.Substring(subContent.IndexOf("更新时间：")
+                    , subContent.IndexOf("匹配度") - subContent.IndexOf("更新时间：") - 1).Split('/')[1];
+
+                //性别
+                cv.Sex = subContent.Substring(subContent.IndexOf("工作经验 | ") + "工作经验 | ".Length, 1);
+
+                //年龄
+                cv.Age = subContent.Substring(subContent.IndexOf(cv.Sex + " |  ") + (cv.Sex + " |  ").Length, 
+                    subContent.IndexOf("岁") - subContent.IndexOf(cv.Sex + " |  ") - (cv.Sex + " |  ").Length);
+
+                //学历
+                cv.Education = subContent.Substring(subContent.IndexOf("学　历："), 
+                    subContent.IndexOf("专　业：") - subContent.IndexOf("学　历：")).Split('：')[1];
+                
+                //手机号码
+                cv.Phone = subContent.Substring(subContent.IndexOf("电　话：")
+                    , subContent.IndexOf("E-mail：") - subContent.IndexOf("电　话：") - 1).Split('：')[1];
+
+                //电子邮件
+                cv.Email = subContent.Substring(subContent.IndexOf("E-mail：")
+                    , subContent.IndexOf("最近工作") - subContent.IndexOf("E-mail：")).Split('：')[1];
+
+                //未获取
+                //英语等级
+                //cv.EnglishLevel = subContent.Substring(subContent.IndexOf("英语水平：")
+                //    , subContent.IndexOf("英语：   ") - subContent.IndexOf("英语水平：") - 1).Split('：')[1];
+
+                //求职意向
+                cv.JobIntension = subContent.Substring(subContent.IndexOf("目标职能： ")
+                    , subContent.IndexOf("求职状态") - subContent.IndexOf("目标职能： ")).Split('：')[1];
+
+                //期望薪水
+                cv.Salary = subContent.Substring(subContent.IndexOf("期望薪资： ")
+                    , subContent.IndexOf("目标职能") - subContent.IndexOf("期望薪资： ")).Split('：')[1];
+
+                //毕业院校
+                cv.School = subContent.Substring(subContent.IndexOf("学　校："),
+                    subContent.IndexOf("自我评价") - subContent.IndexOf("学　校：") - 1).Split('：')[1];
+
+                //专业
+                cv.Major = subContent.Substring(subContent.IndexOf("专　业："),
+                    subContent.IndexOf("学　校") - subContent.IndexOf("专　业：")).Split('：')[1];
+
+                //工作地点
+                cv.WorkPlace = subContent.Substring(subContent.IndexOf("目标地点： ")
+                    , subContent.IndexOf("期望薪资") - subContent.IndexOf("目标地点： ")).Split('：')[1];
+
+                //最近单位
+                cv.RecentWorkUnits = subContent.Substring(subContent.IndexOf("公　司：")
+                    , subContent.IndexOf("行　业") - subContent.IndexOf("公　司：")).Split('：')[1];
+
+                //最近职位
+                cv.RecnetJob = subContent.Substring(subContent.IndexOf("职　位：")
+                    , subContent.IndexOf("学历学　历") - subContent.IndexOf("职　位：")).Split('：')[1];
+                #endregion 前程无忧
+            }
+            else if (this.DropDownList2.SelectedItem.Text == "猎聘网")
+            {
+                #region 猎聘网            
+                string subContent = clearContent;
+
+                //工作年限
+                cv.WorkLife = subContent.Substring(subContent.IndexOf("工作年限：")
+                    , subContent.IndexOf("年婚姻状况") - subContent.IndexOf("工作年限：") - 1).Split('：')[1];
+
+                //姓名
+                cv.Name = subContent.Substring(subContent.IndexOf("姓名：")
+                    , subContent.IndexOf("性别") - subContent.IndexOf("姓名：")).Split('：')[1];
+
+                //性别
+                cv.Sex = subContent.Substring(subContent.IndexOf("性别：")
+                    , subContent.IndexOf("/手机号码") - subContent.IndexOf("性别：")).Split('：')[1];
+
+                //年龄
+                cv.Age = subContent.Substring(subContent.IndexOf("年龄：")
+                    , subContent.IndexOf("岁电子邮件") - subContent.IndexOf("年龄：") - 1).Split('：')[1];
+
+                //学历
+                cv.Education = subContent.Substring(subContent.IndexOf("教育程度：")
+                    , subContent.IndexOf("工作年限") - subContent.IndexOf("教育程度：")).Split('：')[1];
+
+                //手机号码
+                cv.Phone = subContent.Substring(subContent.IndexOf("手机号码：")
+                    , subContent.IndexOf("年龄") - subContent.IndexOf("手机号码：") - 1).Split('：')[1];
+
+                //电子邮件
+                cv.Email = subContent.Substring(subContent.IndexOf("电子邮件：")
+                    , subContent.IndexOf("教育程度") - subContent.IndexOf("电子邮件：")).Split('：')[1];
+
+                //英语等级
+                //cv.EnglishLevel = subContent.Substring(subContent.IndexOf("英语水平：")
+                //    , subContent.IndexOf("英语：   ") - subContent.IndexOf("英语水平：") - 1).Split('：')[1];
+
+                //求职意向
+                cv.JobIntension = subContent.Substring(subContent.IndexOf("期望职位：")
+                    , subContent.IndexOf("期望地点") - subContent.IndexOf("期望职位：")).Split('：')[1];
+
+                //期望薪水
+                cv.Salary = subContent.Substring(subContent.IndexOf("期望年薪：")
+                    , subContent.IndexOf("工作经历") - subContent.IndexOf("期望年薪：")).Split('：')[1];
+
+                //毕业院校
+                cv.School = subContent.Substring(subContent.IndexOf("教育经历"), 
+                    subContent.IndexOf("语言能力") - subContent.IndexOf("教育经历")).Split(new char[] { ' ', ' ' })[0]
+                    .Replace("教育经历", string.Empty);
+
+                //专业
+                cv.Major = subContent.Substring(subContent.IndexOf("教育经历"), 
+                    subContent.IndexOf("语言能力") - subContent.IndexOf("教育经历")).Split(new char[] { ' ', ' ' })[2]
+                    .Replace(cv.Education, string.Empty).Substring(15);
+
+                //工作地点
+                cv.WorkPlace = subContent.Substring(subContent.IndexOf("期望地点：")
+                    , subContent.IndexOf("期望年薪：") - subContent.IndexOf("期望地点：")).Split('：')[1];
+
+                //最近单位
+                cv.RecentWorkUnits = subContent.Substring(subContent.IndexOf("公司名称：")
+                    , subContent.IndexOf("所任职位：") - subContent.IndexOf("公司名称：")).Split('：')[1];
+
+                //最近职位
+                cv.RecnetJob = subContent.Substring(subContent.IndexOf("所任职位：")
+                    , subContent.IndexOf("目前年薪") - subContent.IndexOf("所任职位：")).Split('：')[1];
+                #endregion 猎聘网
+            }
+            else if (this.DropDownList2.SelectedItem.Text == "国际人才")
+            {
+                #region 国际人才            
+                string subContent = clearContent;
+
+                //工作年限
+                cv.WorkLife = subContent.Substring(subContent.IndexOf("工作经验: "), subContent.IndexOf("| 现居住地") - subContent.IndexOf("工作经验: ") - 1).Split(':')[1];
+
+                //姓名
+                cv.Name = subContent.Substring(subContent.IndexOf("联系人：")
+                    , subContent.IndexOf("联系电话") - subContent.IndexOf("联系人：") ).Split('：')[1];
+
+                //性别
+                cv.Sex = subContent.Substring(subContent.IndexOf("性别:")
+                    , subContent.IndexOf("| 身高") - subContent.IndexOf("性别:") - 1).Split(':')[1];
+
+                //年龄
+                cv.Age = subContent.Substring(subContent.IndexOf("年龄： ")
+                    , subContent.IndexOf("岁") - subContent.IndexOf("年龄： ") ).Split('：')[1];
+
+                //学历
+                cv.Education = subContent.Substring(subContent.IndexOf("最高学历：")
+                    , subContent.IndexOf("| \v工作经验") - subContent.IndexOf("最高学历：")).Split('：')[1];
+                
+                //手机号码
+                cv.Phone = subContent.Substring(subContent.IndexOf("联系电话：")
+                    , subContent.IndexOf("联系邮箱") - subContent.IndexOf("联系电话：")).Split('：')[1];
+
+                //电子邮件
+                cv.Email = subContent.Substring(subContent.IndexOf("联系邮箱：")
+                    , subContent.IndexOf("http:") - subContent.IndexOf("联系邮箱：") ).Split('：')[1];
+
+                //英语等级
+                //cv.EnglishLevel = subContent.Substring(subContent.IndexOf("英语水平：")
+                //    , subContent.IndexOf("英语：   ") - subContent.IndexOf("英语水平：") - 1).Split('：')[1];
+
+                //求职意向
+                cv.JobIntension = subContent.Substring(subContent.IndexOf("期望从事的岗位：")
+                    , subContent.IndexOf("\v期望从事的行业") - subContent.IndexOf("期望从事的岗位：")).Split('：')[1];
+
+                //期望薪水
+                cv.Salary = subContent.Substring(subContent.IndexOf("期望月薪：")
+                    , subContent.IndexOf("\v期望从事的岗位") - subContent.IndexOf("期望月薪：")).Split('：')[1];
+
+                //毕业院校
+                cv.School = subContent.Substring(subContent.IndexOf("教育经历"),
+                    subContent.IndexOf("专业描述：") - subContent.IndexOf("教育经历")).Split('|')[0].Substring(20);
+
+                //专业
+                cv.Major = subContent.Substring(subContent.IndexOf("教育经历"),
+                    subContent.IndexOf("专业描述：") - subContent.IndexOf("教育经历")).Split('|')[1];
+
+                //工作地点
+                //cv.WorkPlace = subContent.Substring(subContent.IndexOf("意向地区： ")
+                //    , subContent.IndexOf("工作性质：") - subContent.IndexOf("意向地区： ") - 1).Split('：')[1];
+
+                //最近单位
+                cv.RecentWorkUnits = string.Empty;
+
+                //最近职位
+                cv.RecnetJob = string.Empty;
+                #endregion 国际人才
+            }
+
+
             doc.Close();
+
+            File.Delete(fname);//删除临时文件
         }
     }
 }
