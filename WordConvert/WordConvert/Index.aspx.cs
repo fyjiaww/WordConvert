@@ -431,7 +431,7 @@ namespace WordConvert
             CurriculumVitae cv = new CurriculumVitae();
             cv.ReceiptTime = DateTime.Now;
 
-            if (this.DropDownList2.SelectedItem.Text== "中国皮革人才网")
+            if (this.DropDownList2.SelectedItem.Text == "中国皮革人才网")
             {
                 #region 皮革人才网            
                 string subContent = clearContent.Substring(clearContent.IndexOf("标准简历"));
@@ -502,15 +502,15 @@ namespace WordConvert
                 cv.RecnetJob = string.Empty;
                 #endregion 皮革人才网
             }
-            else if(this.DropDownList2.SelectedItem.Text == "前程无忧")
+            else if (this.DropDownList2.SelectedItem.Text == "前程无忧")
             {
                 #region 前程无忧            
                 string subContent = clearContent;
 
                 //工作年限
-                cv.WorkLife = clearContent.Substring(clearContent.IndexOf("%"),clearContent.IndexOf("工作经验 ")- clearContent.IndexOf("%")-1).Split(' ')[1];
+                cv.WorkLife = clearContent.Substring(clearContent.IndexOf("%"),
+                    clearContent.IndexOf("工作经验 ") - clearContent.IndexOf("%") - 1).Split(' ')[1];
 
-                //未获取
                 //姓名
                 cv.Name = subContent.Substring(subContent.IndexOf("更新时间：")
                     , subContent.IndexOf("匹配度") - subContent.IndexOf("更新时间：") - 1).Split('/')[1];
@@ -519,13 +519,13 @@ namespace WordConvert
                 cv.Sex = subContent.Substring(subContent.IndexOf("工作经验 | ") + "工作经验 | ".Length, 1);
 
                 //年龄
-                cv.Age = subContent.Substring(subContent.IndexOf(cv.Sex + " |  ") + (cv.Sex + " |  ").Length, 
+                cv.Age = subContent.Substring(subContent.IndexOf(cv.Sex + " |  ") + (cv.Sex + " |  ").Length,
                     subContent.IndexOf("岁") - subContent.IndexOf(cv.Sex + " |  ") - (cv.Sex + " |  ").Length);
 
                 //学历
-                cv.Education = subContent.Substring(subContent.IndexOf("学　历："), 
+                cv.Education = subContent.Substring(subContent.IndexOf("学　历："),
                     subContent.IndexOf("专　业：") - subContent.IndexOf("学　历：")).Split('：')[1];
-                
+
                 //手机号码
                 cv.Phone = subContent.Substring(subContent.IndexOf("电　话：")
                     , subContent.IndexOf("E-mail：") - subContent.IndexOf("电　话：") - 1).Split('：')[1];
@@ -534,8 +534,8 @@ namespace WordConvert
                 cv.Email = subContent.Substring(subContent.IndexOf("E-mail：")
                     , subContent.IndexOf("最近工作") - subContent.IndexOf("E-mail：")).Split('：')[1];
 
-                //未获取
                 //英语等级
+                cv.EnglishLevel = string.Empty;
                 //cv.EnglishLevel = subContent.Substring(subContent.IndexOf("英语水平：")
                 //    , subContent.IndexOf("英语：   ") - subContent.IndexOf("英语水平：") - 1).Split('：')[1];
 
@@ -602,6 +602,7 @@ namespace WordConvert
                     , subContent.IndexOf("教育程度") - subContent.IndexOf("电子邮件：")).Split('：')[1];
 
                 //英语等级
+                cv.EnglishLevel = string.Empty;
                 //cv.EnglishLevel = subContent.Substring(subContent.IndexOf("英语水平：")
                 //    , subContent.IndexOf("英语：   ") - subContent.IndexOf("英语水平：") - 1).Split('：')[1];
 
@@ -614,12 +615,12 @@ namespace WordConvert
                     , subContent.IndexOf("工作经历") - subContent.IndexOf("期望年薪：")).Split('：')[1];
 
                 //毕业院校
-                cv.School = subContent.Substring(subContent.IndexOf("教育经历"), 
+                cv.School = subContent.Substring(subContent.IndexOf("教育经历"),
                     subContent.IndexOf("语言能力") - subContent.IndexOf("教育经历")).Split(new char[] { ' ', ' ' })[0]
                     .Replace("教育经历", string.Empty);
 
                 //专业
-                cv.Major = subContent.Substring(subContent.IndexOf("教育经历"), 
+                cv.Major = subContent.Substring(subContent.IndexOf("教育经历"),
                     subContent.IndexOf("语言能力") - subContent.IndexOf("教育经历")).Split(new char[] { ' ', ' ' })[2]
                     .Replace(cv.Education, string.Empty).Substring(15);
 
@@ -646,7 +647,7 @@ namespace WordConvert
 
                 //姓名
                 cv.Name = subContent.Substring(subContent.IndexOf("联系人：")
-                    , subContent.IndexOf("联系电话") - subContent.IndexOf("联系人：") ).Split('：')[1];
+                    , subContent.IndexOf("联系电话") - subContent.IndexOf("联系人：")).Split('：')[1];
 
                 //性别
                 cv.Sex = subContent.Substring(subContent.IndexOf("性别:")
@@ -654,21 +655,22 @@ namespace WordConvert
 
                 //年龄
                 cv.Age = subContent.Substring(subContent.IndexOf("年龄： ")
-                    , subContent.IndexOf("岁") - subContent.IndexOf("年龄： ") ).Split('：')[1];
+                    , subContent.IndexOf("岁") - subContent.IndexOf("年龄： ")).Split('：')[1];
 
                 //学历
                 cv.Education = subContent.Substring(subContent.IndexOf("最高学历：")
                     , subContent.IndexOf("| \v工作经验") - subContent.IndexOf("最高学历：")).Split('：')[1];
-                
+
                 //手机号码
                 cv.Phone = subContent.Substring(subContent.IndexOf("联系电话：")
                     , subContent.IndexOf("联系邮箱") - subContent.IndexOf("联系电话：")).Split('：')[1];
 
                 //电子邮件
                 cv.Email = subContent.Substring(subContent.IndexOf("联系邮箱：")
-                    , subContent.IndexOf("http:") - subContent.IndexOf("联系邮箱：") ).Split('：')[1];
+                    , subContent.IndexOf("http:") - subContent.IndexOf("联系邮箱：")).Split('：')[1];
 
                 //英语等级
+                cv.EnglishLevel = string.Empty;
                 //cv.EnglishLevel = subContent.Substring(subContent.IndexOf("英语水平：")
                 //    , subContent.IndexOf("英语：   ") - subContent.IndexOf("英语水平：") - 1).Split('：')[1];
 
@@ -689,6 +691,7 @@ namespace WordConvert
                     subContent.IndexOf("专业描述：") - subContent.IndexOf("教育经历")).Split('|')[1];
 
                 //工作地点
+                cv.WorkPlace = string.Empty;
                 //cv.WorkPlace = subContent.Substring(subContent.IndexOf("意向地区： ")
                 //    , subContent.IndexOf("工作性质：") - subContent.IndexOf("意向地区： ") - 1).Split('：')[1];
 
@@ -704,6 +707,18 @@ namespace WordConvert
             doc.Close();
 
             File.Delete(fname);//删除临时文件
+
+            string sql = @"Insert into TestData 
+(Name,Sex,Age,Education,Phone,Email,EnglishLevel,JobIntension,WorkPlace,WorkLife,
+Salary,School,Major,RecentWorkUnits,RecnetJob,ReceiptTime) 
+values ('" + cv.Name.Trim() + "','" + cv.Sex.Trim() + "','" + cv.Age.Trim() + "','" + cv.Education.Trim() + "','" + cv.Phone.Trim() +
+"','" + cv.Email.Trim() + "','" + cv.EnglishLevel.Trim() + "','" + cv.JobIntension.Trim() + "','" + cv.WorkPlace.Trim() + "','" +
+cv.WorkLife.Trim() + "','" + cv.Salary.Trim() + "','" + cv.School.Trim() + "','" + cv.Major.Trim() + "','" + cv.RecentWorkUnits.Trim() +
+"','" + cv.RecnetJob.Trim() + "','" + cv.ReceiptTime + "')";
+
+            var result = SqlHelper.ExecuteNonQuery(SqlHelper.ConnectionStringLocalTransaction, CommandType.Text, sql, null);
+
+            Page.RegisterStartupScript("alt", "<script>alert('完成：" + result.ToString() + "!')</script>");
         }
     }
 }
