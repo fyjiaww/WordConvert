@@ -25,7 +25,8 @@ namespace WordConvert
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-
+            if (!Directory.Exists(Server.MapPath("~/wordInfo/ ")))
+                Directory.CreateDirectory(Server.MapPath("~/wordInfo/"));
         }
 
         //转换成html按钮
