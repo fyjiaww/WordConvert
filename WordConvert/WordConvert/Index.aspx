@@ -11,8 +11,8 @@
         }
     </style>
 </head>
-<body>
-    <form id="form1" runat="server">
+<body height="100%">
+    <form id="form1" runat="server" height="100%">
         <h3>word转换工具</h3>
         <table border="1" cellspacing="0" width="700" height="200" style="border: 1px solid beige">
             <tr>                
@@ -51,6 +51,9 @@
                     <asp:Button ID="Button3" runat="server" Text="导出" OnClick="Button3_Click" /></td>
             </tr>
         </table>
+        <iframe id="BodyFrame" runat="server" height="391" width="100%">
+
+        </iframe>
     </form>
 </body>
 </html>
