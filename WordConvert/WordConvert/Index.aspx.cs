@@ -133,6 +133,8 @@ namespace WordConvert
 
                 File.Delete(strFile); //删除临时保存的文件
 
+                this.BodyFrame.Src = (strFilePath + filename + ".html");
+
                 return (strFilePath + filename + ".html");
             }
             catch (Exception ex)
